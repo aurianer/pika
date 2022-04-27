@@ -174,7 +174,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 
     // Perform warmup operation with cublas
     // note cublas is column major ordering : transpose the order
-    pika::chrono::high_resolution_timer t1;
+    pika::chrono::detail::high_resolution_timer t1;
     //
     std::cout << "calling CUBLAS...\n";
     auto gemm = ex::transfer_just(cuda_sched) |
@@ -197,7 +197,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     // schedule/then_with_x will create a new event attached to a new sender so
     // we can reuse the same cuda scheduler stream if we want
 
-    pika::chrono::high_resolution_timer t2;
+    pika::chrono::detail::high_resolution_timer t2;
 
     // This loop is currently inefficient. Because of the type-erasure with
     // unique_any_sender the cuBLAS calls are not scheduled on the same stream
@@ -250,7 +250,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
             // allocate storage for the CPU result
             std::vector<T> reference(size_C);
 
-            pika::chrono::high_resolution_timer t3;
+            pika::chrono::detail::high_resolution_timer t3;
             matrixMulCPU<T>(reference.data(), h_A.data(), h_B.data(),
                 matrix_size.uiHA, matrix_size.uiWA, matrix_size.uiWB);
             double us3 = t3.elapsed_microseconds();

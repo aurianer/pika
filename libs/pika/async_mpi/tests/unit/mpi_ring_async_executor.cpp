@@ -106,7 +106,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
         std::vector<int> tokens(iterations, -1);
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         std::atomic<std::uint64_t> counter(iterations);
         for (std::uint64_t i = 0; (i != iterations); ++i)

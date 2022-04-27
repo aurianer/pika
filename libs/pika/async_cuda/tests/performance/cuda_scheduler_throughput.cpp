@@ -118,7 +118,7 @@ void matrixMultiply(
     auto test_function = [&](cu::cuda_scheduler& cuda_sched,
                              const std::string& msg, std::size_t n_iters) {
         // time many cuda kernels spawned one after each other when they complete
-        pika::chrono::high_resolution_timer t1;
+        pika::detail::high_resolution_timer t1;
         for (std::size_t j = 0; j < n_iters; j++)
         {
             tt::sync_wait(ex::schedule(cuda_sched) |
