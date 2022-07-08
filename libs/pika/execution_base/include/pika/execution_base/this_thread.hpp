@@ -15,6 +15,7 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <ratio>
 
 namespace pika { namespace execution_base {
     namespace detail {

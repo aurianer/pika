@@ -31,8 +31,9 @@ namespace pika::chrono::detail {
             start_time_ = take_time_stamp();
         }
 
-        // return elapsed time in seconds
-        template <typename Unit = std::chrono::nanoseconds>
+        // return elapsed time in seconds (double different from
+        // std::chrono::seconds which returns an unsigned long)
+        template <typename Unit = std::chrono::duration<double>>
         auto elapsed() const noexcept
         {
             return std::chrono::duration_cast<Unit>(

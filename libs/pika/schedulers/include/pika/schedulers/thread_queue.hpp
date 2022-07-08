@@ -224,10 +224,11 @@ namespace pika { namespace threads { namespace policies {
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
                 if (get_maintain_queue_wait_times_enabled())
                 {
+                    using namespace std::chrono;
                     addfrom->new_tasks_wait_ +=
-                        std::chrono::high_resolution_clock::now()
-                            .time_since_epoch()
-                            .count() -
+                        duration<std::uint64_t, std::nano>(high_resolution_clock::now()
+                            .time_since_epoch()).count()
+                             -
                         task->waittime;
                     ++addfrom->new_tasks_wait_count_;
                 }
@@ -373,7 +374,7 @@ namespace pika { namespace threads { namespace policies {
         bool cleanup_terminated_locked(bool delete_all = false)
         {
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
-            util::detail::tick_counter tc(cleanup_terminated_time_);
+            chrono::detail::tick_counter tc(cleanup_terminated_time_);
 #endif
 
             if (terminated_items_count_.load(std::memory_order_acquire) == 0)
@@ -748,9 +749,10 @@ namespace pika { namespace threads { namespace policies {
 
             task_description* td = task_description_alloc_.allocate(1);
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
+            using namespace std::chrono;
             new (td) task_description{PIKA_MOVE(data),
-                std::chrono::high_resolution_clock::now()
-                    .time_since_epoch()
+                duration<std::uint64_t, std::nano>(high_resolution_clock::now()
+                    .time_since_epoch())
                     .count()};
 #else
             new (td) task_description{PIKA_MOVE(data)};    //-V106
@@ -875,10 +877,9 @@ namespace pika { namespace threads { namespace policies {
         {
             ++work_items_count_.data_;
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
+            using namespace std::chrono;
             work_items_.push(new thread_description{PIKA_MOVE(thrd),
-                                 std::chrono::high_resolution_clock::now()
-                                     .time_since_epoch()
-                                     .count()},
+                                 duration<std::uint64_t, std::nano>(high_resolution_clock::now().time_since_epoch()) .count()},
                 other_end);
 #else
             // detach the thread from the id_ref without decrementing

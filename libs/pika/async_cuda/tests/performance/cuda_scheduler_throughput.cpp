@@ -132,7 +132,7 @@ void matrixMultiply(
                     },
                     CUBLAS_POINTER_MODE_HOST));
         }
-        double us1 = t1.elapsed_microseconds();
+        double us1 = t1.elapsed<microseconds>();
         std::cout << "us per iteration " << us1 / n_iters << " : " << msg
                   << std::endl
                   << std::endl;

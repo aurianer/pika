@@ -190,7 +190,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     // wait until the operation completes
     tt::sync_wait(std::move(gemm));
 
-    double us1 = t1.elapsed_microseconds();
+    double us1 = t1.elapsed<microseconds>();
     std::cout << "warmup: elapsed_microseconds " << us1 << std::endl;
 
     // once the sender has been synchronized, the next call to
@@ -219,7 +219,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     auto gemms_finished_split = ex::split(std::move(gemms_finished));
 
     auto matrix_print_finished = ex::then(gemms_finished_split, [&]() {
-        double us2 = t2.elapsed_microseconds();
+        double us2 = t2.elapsed<microseconds>();
         std::cout << "actual: elapsed_microseconds " << us2 << " iterations "
                   << iterations << std::endl;
 
@@ -253,7 +253,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
             pika::chrono::detail::high_resolution_timer t3;
             matrixMulCPU<T>(reference.data(), h_A.data(), h_B.data(),
                 matrix_size.uiHA, matrix_size.uiWA, matrix_size.uiWB);
-            double us3 = t3.elapsed_microseconds();
+            double us3 = t3.elapsed<microseconds>();
             std::cout << "CPU elapsed_microseconds (1 iteration) " << us3
                       << std::endl;
 
