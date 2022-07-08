@@ -14,7 +14,9 @@ spack load ccache@4.5.1 %gcc@10.3.0
 
 export CMAKE_CXX_COMPILER_LAUNCHER=ccache
 export CMAKE_GENERATOR=Ninja
-export CCACHE_DIR=/scratch/snx3000/simbergm/ccache-jenkins-pika
+if [[ $USER == "jenkssl" ]]; then
+    export CCACHE_DIR=/scratch/snx3000/simbergm/ccache-jenkins-pika
+fi
 export CCACHE_MAXSIZE=100G
 export CCACHE_MAXFILES=50000
 export CCACHE_COMPILERCHECK="%compiler% -v"
