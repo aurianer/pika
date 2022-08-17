@@ -34,22 +34,22 @@ namespace pika { namespace util {
             using reference_type =
                 typename util::lazy_conditional<std::is_void<Reference>::value,
                     util::detail::invoke_result<Transformer, Iterator>,
-                    util::identity<Reference>>::type;
+                    ::pika::detail::type_identity<Reference>>::type;
 
             using value_type =
                 typename util::lazy_conditional<std::is_void<Value>::value,
                     std::remove_reference<reference_type>,
-                    util::identity<Value>>::type;
+                    ::pika::detail::type_identity<Value>>::type;
 
             using iterator_category =
                 typename util::lazy_conditional<std::is_void<Category>::value,
                     category_iterator_traits_helper<Iterator>,
-                    util::identity<Category>>::type;
+                    ::pika::detail::type_identity<Category>>::type;
 
             using difference_type =
                 typename util::lazy_conditional<std::is_void<Difference>::value,
                     difference_type_iterator_traits_helper<Iterator>,
-                    util::identity<Difference>>::type;
+                    ::pika::detail::type_identity<Difference>>::type;
 
             using type = pika::util::iterator_adaptor<
                 transform_iterator<Iterator, Transformer, Reference, Value,

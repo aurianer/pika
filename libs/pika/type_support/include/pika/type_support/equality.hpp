@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     namespace detail {
 
         ///////////////////////////////////////////////////////////////////////
@@ -84,4 +84,4 @@ namespace pika { namespace traits {
             std::decay_t<T>>
     {
     };
-}}    // namespace pika::traits
+}    // namespace pika::traits

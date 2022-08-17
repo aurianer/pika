@@ -982,9 +982,10 @@ namespace pika {
 
                 template <typename ExPolicy, typename InIter, typename S,
                     typename F>
-                PIKA_HOST_DEVICE static constexpr pika::util::unused_type
-                sequential(ExPolicy&&, InIter first, std::size_t count,
-                    S stride, F&& f)
+                PIKA_HOST_DEVICE static constexpr pika::util::detail::
+                    unused_type
+                    sequential(ExPolicy&&, InIter first, std::size_t count,
+                        S stride, F&& f)
                 {
                     if (stride == 1)
                     {
@@ -1022,14 +1023,15 @@ namespace pika {
                         }
                     }
 
-                    return pika::util::unused_type();
+                    return pika::util::detail::unused_type();
                 }
 
                 template <typename ExPolicy, typename InIter, typename Size,
                     typename S, typename F, typename Arg, typename... Args>
-                PIKA_HOST_DEVICE static constexpr pika::util::unused_type
-                sequential(ExPolicy&&, InIter first, Size size, S stride, F&& f,
-                    Arg&& arg, Args&&... args)
+                PIKA_HOST_DEVICE static constexpr pika::util::detail::
+                    unused_type
+                    sequential(ExPolicy&&, InIter first, Size size, S stride,
+                        F&& f, Arg&& arg, Args&&... args)
                 {
                     int const init_sequencer[] = {(arg.init_iteration(0), 0),
                         (args.init_iteration(0), 0)...};
@@ -1080,7 +1082,7 @@ namespace pika {
                         (args.exit_iteration(size), 0)...};
                     (void) exit_sequencer;
 
-                    return pika::util::unused_type();
+                    return pika::util::detail::unused_type();
                 }
 
                 template <typename ExPolicy, typename B, typename Size,
@@ -1102,14 +1104,14 @@ namespace pika {
                                 PIKA_FORWARD(ExPolicy, policy), first, size,
                                 part_iterations<ExPolicy, F, S>{
                                     PIKA_FORWARD(F, f)},
-                                pika::util::empty_function{});
+                                pika::util::detail::empty_function{});
                         }
 
                         return util::partitioner<ExPolicy>::call_with_index(
                             PIKA_FORWARD(ExPolicy, policy), first, size, stride,
                             part_iterations<ExPolicy, F, S>{
                                 PIKA_FORWARD(F, f), stride},
-                            pika::util::empty_function{});
+                            pika::util::detail::empty_function{});
                     }
                     else
                     {

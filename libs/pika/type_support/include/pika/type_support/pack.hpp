@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     template <typename... Ts>
     struct pack
@@ -354,4 +354,4 @@ namespace pika { namespace util {
         template <template <typename...> class NewPack, typename OldPack>
         using change_pack_t = typename change_pack<NewPack, OldPack>::type;
     }    // namespace detail
-}}       // namespace pika::util
+}    // namespace pika::util

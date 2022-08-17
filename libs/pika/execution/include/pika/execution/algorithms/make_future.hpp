@@ -143,7 +143,9 @@ namespace pika { namespace execution { namespace experimental {
                 make_future_receiver r_local = PIKA_MOVE(r);
 
                 pika::detail::try_catch_exception_ptr(
-                    [&]() { r_local.data->set_value(pika::util::unused); },
+                    [&]() {
+                        r_local.data->set_value(pika::util::detail::unused);
+                    },
                     [&](std::exception_ptr ep) {
                         r_local.data->set_exception(PIKA_MOVE(ep));
                     });

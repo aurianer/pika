@@ -62,29 +62,31 @@ namespace pika { namespace util {
         {
             // the following type calculations use lazy_conditional to avoid
             // premature instantiations
-            using value_type = typename std::conditional<
-                std::is_void<Value>::value,
-                typename util::lazy_conditional<std::is_void<Reference>::value,
-                    value_type_iterator_traits_helper<Base>,
-                    std::remove_reference<Reference>>::type,
-                Value>::type;
+            using value_type =
+                typename std::conditional<std::is_void<Value>::value,
+                    typename util::detail::lazy_conditional<
+                        std::is_void<Reference>::value,
+                        value_type_iterator_traits_helper<Base>,
+                        std::remove_reference<Reference>>::type,
+                    Value>::type;
 
             using reference_type =
                 typename std::conditional<std::is_void<Reference>::value,
-                    typename util::lazy_conditional<std::is_void<Value>::value,
+                    typename util::detail::lazy_conditional<
+                        std::is_void<Value>::value,
                         reference_iterator_traits_helper<Base>,
                         std::add_lvalue_reference<Value>>::type,
                     Reference>::type;
 
-            using iterator_category =
-                typename util::lazy_conditional<std::is_void<Category>::value,
-                    category_iterator_traits_helper<Base>,
-                    util::identity<Category>>::type;
+            using iterator_category = typename util::detail::lazy_conditional<
+                std::is_void<Category>::value,
+                category_iterator_traits_helper<Base>,
+                ::pika::detail::type_identity<Category>>::type;
 
-            using difference_type =
-                typename util::lazy_conditional<std::is_void<Difference>::value,
-                    difference_type_iterator_traits_helper<Base>,
-                    util::identity<Difference>>::type;
+            using difference_type = typename util::detail::lazy_conditional<
+                std::is_void<Difference>::value,
+                difference_type_iterator_traits_helper<Base>,
+                ::pika::detail::type_identity<Difference>>::type;
 
             using type = iterator_facade<Derived, value_type, iterator_category,
                 reference_type, difference_type, Pointer>;
