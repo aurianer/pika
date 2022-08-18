@@ -11,7 +11,7 @@
 #include <pika/functional/invoke_result.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
-#include <pika/type_support/identity.hpp>
+#include <pika/type_support/type_identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
 
 #include <type_traits>

@@ -70,7 +70,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     template <typename Executor, typename F, typename Shape, typename Future,
         std::size_t... Is, typename... Ts>
     PIKA_FORCEINLINE auto fused_bulk_sync_execute(Executor&& exec, F&& f,
-        Shape const& shape, Future&& predecessor, pika::util::index_pack<Is...>,
+        Shape const& shape, Future&& predecessor, pika::util::detail::index_pack<Is...>,
         std::tuple<Ts...> const& args)
         -> decltype(execution::bulk_sync_execute(PIKA_FORWARD(Executor, exec),
             PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Future, predecessor),
@@ -100,7 +100,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         {
             return fused_bulk_sync_execute(exec_, f_, shape_,
                 PIKA_FORWARD(Future, predecessor),
-                typename pika::util::make_index_pack<sizeof...(Ts)>::type(),
+                typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type(),
                 args_);
         }
     };
@@ -122,7 +122,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     template <typename Executor, typename F, typename Shape, typename Future,
         std::size_t... Is, typename... Ts>
     PIKA_FORCEINLINE auto fused_bulk_async_execute(Executor&& exec, F&& f,
-        Shape const& shape, Future&& predecessor, pika::util::index_pack<Is...>,
+        Shape const& shape, Future&& predecessor, pika::util::detail::index_pack<Is...>,
         std::tuple<Ts...> const& args)
         -> decltype(execution::bulk_async_execute(PIKA_FORWARD(Executor, exec),
             PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Future, predecessor),
@@ -152,7 +152,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         {
             return fused_bulk_async_execute(exec_, f_, shape_,
                 PIKA_FORWARD(Future, predecessor),
-                typename pika::util::make_index_pack<sizeof...(Ts)>::type(),
+                typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type(),
                 args_);
         }
     };

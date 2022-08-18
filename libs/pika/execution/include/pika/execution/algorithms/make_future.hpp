@@ -209,11 +209,11 @@ namespace pika { namespace execution { namespace experimental {
                 typename pika::execution::experimental::value_types_of_t<
                     std::decay_t<Sender>,
                     pika::execution::experimental::detail::empty_env,
-                    pika::util::pack, pika::util::pack>;
+                    pika::util::detail::pack, pika::util::detail::pack>;
 #else
             using value_types = typename pika::execution::experimental::
                 sender_traits<std::decay_t<Sender>>::template value_types<
-                    pika::util::pack, pika::util::pack>;
+                    pika::util::detail::pack, pika::util::detail::pack>;
 #endif
             using result_type =
                 std::decay_t<detail::single_result_t<value_types>>;

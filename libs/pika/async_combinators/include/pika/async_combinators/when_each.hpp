@@ -193,7 +193,7 @@ namespace pika {
                 }
                 else
                 {
-                    using future_type = pika::util::detail::decay_unwrap_t<
+                    using future_type = pika::detail::decay_unwrap_t<
                         typename std::tuple_element<I, Tuple>::type>;
 
                     if constexpr (pika::traits::is_future_v<future_type> ||
@@ -286,7 +286,7 @@ namespace pika {
             template <std::size_t I>
             PIKA_FORCEINLINE void await_future()
             {
-                using future_type = pika::util::detail::decay_unwrap_t<
+                using future_type = pika::detail::decay_unwrap_t<
                     typename std::tuple_element<I, Tuple>::type>;
 
                 pika::intrusive_ptr<when_each_frame> this_(this);
@@ -429,7 +429,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
     std::enable_if_t<!pika::traits::is_future_v<std::decay_t<F>> &&
-            pika::util::all_of_v<pika::traits::is_future<Ts>...>,
+            pika::util::detail::all_of_v<pika::traits::is_future<Ts>...>,
         pika::future<void>>
     when_each(F&& f, Ts&&... ts)
     {

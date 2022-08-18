@@ -218,7 +218,7 @@ namespace pika { namespace util { namespace detail {
         /// Deduces to a true_type if any of the given types marks
         /// the underlying type to be spread into the current context.
         template <typename... T>
-        using is_any_spread_t = util::any_of<is_spread<T>...>;
+        using is_any_spread_t = util::detail::any_of<is_spread<T>...>;
 
         template <typename C, typename... T>
         constexpr auto map_spread(C&& callable, T&&... args)
@@ -847,7 +847,7 @@ namespace pika { namespace util { namespace detail {
         auto traverse(Strategy, T&& element)
             -> decltype(std::declval<mapping_helper>().match(
                 std::declval<container_category_of_t<
-                    typename pika::util::detail::decay_unwrap<T>::type>>(),
+                    typename pika::detail::decay_unwrap<T>::type>>(),
                 std::declval<T>()));
 
         /// \copybrief traverse
@@ -855,7 +855,7 @@ namespace pika { namespace util { namespace detail {
         auto try_traverse(Strategy, T&& element)
             -> decltype(std::declval<mapping_helper>().try_match(
                 std::declval<container_category_of_t<
-                    typename pika::util::detail::decay_unwrap<T>::type>>(),
+                    typename pika::detail::decay_unwrap<T>::type>>(),
                 std::declval<T>()))
         {
             // We use tag dispatching here, to categorize the type T whether
@@ -863,7 +863,7 @@ namespace pika { namespace util { namespace detail {
             // Then we can choose the underlying implementation accordingly.
             return try_match(
                 container_category_of_t<
-                    typename pika::util::detail::decay_unwrap<T>::type>{},
+                    typename pika::detail::decay_unwrap<T>::type>{},
                 PIKA_FORWARD(T, element));
         }
 

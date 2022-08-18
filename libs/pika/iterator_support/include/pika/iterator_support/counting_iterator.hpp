@@ -14,7 +14,7 @@
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
-#include <pika/type_support/identity.hpp>
+#include <pika/type_support/type_identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
 
 #include <cstddef>
@@ -46,9 +46,9 @@ namespace pika { namespace util {
                 ::pika::detail::type_identity<std::random_access_iterator_tag>,
                 iterator_category<Incrementable>>;
 
-            using traversal = typename util::detail::lazy_conditional<
+            using traversal = util::detail::lazy_conditional_t<
                 std::is_void<CategoryOrTraversal>::value, base_traversal,
-                ::pika::detail::type_identity<CategoryOrTraversal>>::type;
+                ::pika::detail::type_identity<CategoryOrTraversal>>;
 
             // calculate difference_type of the resulting iterator
             template <typename Integer>
@@ -76,9 +76,9 @@ namespace pika { namespace util {
                 integer_difference_type<Incrementable>,
                 iterator_difference_type<Incrementable>>;
 
-            using difference = typename util::detail::lazy_conditional<
+            using difference = util::detail::lazy_conditional_t<
                 std::is_void<Difference>::value, base_difference,
-                ::pika::detail::type_identity<Difference>>::type;
+                ::pika::detail::type_identity<Difference>>;
 
             using type = iterator_adaptor<counting_iterator<Incrementable,
                                               CategoryOrTraversal, Difference>,

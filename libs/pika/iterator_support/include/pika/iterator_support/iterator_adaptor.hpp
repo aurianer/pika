@@ -14,7 +14,7 @@
 #include <pika/config.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/type_support/identity.hpp>
+#include <pika/type_support/type_identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
 
 #include <algorithm>
@@ -78,15 +78,15 @@ namespace pika { namespace util {
                         std::add_lvalue_reference<Value>>::type,
                     Reference>::type;
 
-            using iterator_category = typename util::detail::lazy_conditional<
+            using iterator_category = util::detail::lazy_conditional_t<
                 std::is_void<Category>::value,
                 category_iterator_traits_helper<Base>,
-                ::pika::detail::type_identity<Category>>::type;
+                ::pika::detail::type_identity<Category>>;
 
-            using difference_type = typename util::detail::lazy_conditional<
+            using difference_type = util::detail::lazy_conditional_t<
                 std::is_void<Difference>::value,
                 difference_type_iterator_traits_helper<Base>,
-                ::pika::detail::type_identity<Difference>>::type;
+                ::pika::detail::type_identity<Difference>>;
 
             using type = iterator_facade<Derived, value_type, iterator_category,
                 reference_type, difference_type, Pointer>;

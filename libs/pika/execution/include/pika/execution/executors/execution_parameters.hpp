@@ -696,7 +696,7 @@ namespace pika { namespace parallel { namespace execution {
     static_assert(                                                             \
         parameters_type_counter<                                               \
             PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <       \
-            pika::util::detail::decay_unwrap_t<Params>>::value... > ::value <= \
+            pika::detail::decay_unwrap_t<Params>>::value... > ::value <= \
             1,                                                                 \
         "Passing more than one executor parameters type "                      \
         "exposing " PIKA_PP_STRINGIZE(func) " is not possible") /**/
@@ -705,8 +705,8 @@ namespace pika { namespace parallel { namespace execution {
         struct executor_parameters : public unwrapper<Params>...
         {
             static_assert(
-                pika::util::all_of<pika::traits::is_executor_parameters<
-                    std::decay_t<Params>>...>::value,
+                pika::util::detail::all_of_v<pika::traits::is_executor_parameters<
+                    std::decay_t<Params>>...>,
                 "All passed parameters must be a proper executor parameters "
                 "objects");
             static_assert(sizeof...(Params) >= 2,
@@ -725,7 +725,7 @@ namespace pika { namespace parallel { namespace execution {
 
             template <typename Dependent = void,
                 typename Enable = std::enable_if_t<
-                    pika::util::all_of<std::is_constructible<Params>...>::value,
+                    pika::util::detail::all_of<std::is_constructible<Params>...>::value,
                     Dependent>>
             constexpr executor_parameters()
               : unwrapper<Params>()...
@@ -734,8 +734,8 @@ namespace pika { namespace parallel { namespace execution {
 
             template <typename... Params_,
                 typename Enable =
-                    std::enable_if_t<pika::util::pack<Params...>::size ==
-                        pika::util::pack<Params_...>::size>>
+                    std::enable_if_t<pika::util::detail::pack<Params...>::size ==
+                        pika::util::detail::pack<Params_...>::size>>
             constexpr executor_parameters(Params_&&... params)
               : unwrapper<Params>(PIKA_FORWARD(Params_, params))...
             {
@@ -751,7 +751,7 @@ namespace pika { namespace parallel { namespace execution {
     // specialize trait for the type-combiner
     template <typename... Parameters>
     struct is_executor_parameters<detail::executor_parameters<Parameters...>>
-      : pika::util::all_of<pika::traits::is_executor_parameters<Parameters>...>
+      : pika::util::detail::all_of<pika::traits::is_executor_parameters<Parameters>...>
     {
     };
 

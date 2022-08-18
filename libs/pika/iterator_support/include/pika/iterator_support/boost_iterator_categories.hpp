@@ -12,7 +12,7 @@
 
 #if !defined(PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
 
-#include <pika/type_support/identity.hpp>
+#include <pika/type_support/type_identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
 
 #include <iterator>
