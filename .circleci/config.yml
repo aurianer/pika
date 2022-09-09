@@ -37,9 +37,13 @@ convert_xml: &convert_xml
     when: always
     command: |
         mkdir -p ${CIRCLE_JOB}
+        curl \
+          https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
+          --fail -o $HOME/conv.xsl
         xsltproc \
-          /pika/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
+          $HOME/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
           > ${CIRCLE_JOB}/Test.xml
+
 
 move_core_dump: &move_core_dump
     name: Moving core dumps
@@ -76,18 +80,10 @@ jobs:
     steps:
       - checkout:
           path: /pika/source
-      - run:
-          name: Downloading CTest XML to Junit XML
-          command: |
-              curl \
-                https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
-                --fail \
-                -o /pika/conv.xsl
       - persist_to_workspace:
           root: /pika
           paths:
             - ./source
-            - ./conv.xsl
 
   # Check circular dependencies with cpp-dependencies tool
   check_circular_deps:
@@ -740,6 +736,7 @@ workflows:
             - tests.regressions
             - tests.performance
             - tests.headers
+
   build-and-test-arm64:
     jobs:
       - arm64_build
