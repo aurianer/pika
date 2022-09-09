@@ -650,14 +650,14 @@ jobs:
       - run:
           name: Building tests Arm64
           command: |
-            ninja -k 0 tests
+            ninja -k 0 tests.unit.modules.assertion
           working_directory: $HOME/project/build
       - run:
           name: Running tests Arm64
           when: always
           command: |
               ulimit -c unlimited
-              ctest \
+              ctest -R tests.unit.modules.assertion \
                 -j4 \
                 --timeout 400 \
                 -T test \
