@@ -27,7 +27,7 @@ using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
 
-using pika::lcos::barrier;
+using barrier = pika::barrier<pika::detail::empty_oncompletion>;
 
 using pika::threads::detail::register_work;
 using pika::threads::detail::thread_init_data;
@@ -51,7 +51,7 @@ void get_os_thread_num(barrier& barr, queue<std::size_t>& os_threads)
 {
     global_scratch = delay();
     os_threads.push(pika::get_worker_thread_num());
-    barr.wait();
+    [[maybe_unused]] auto a_token = barr.arrive();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ int pika_main(variables_map& vm)
                 register_work(data);
             }
 
-            barr.wait();    // wait for all PX threads to enter the barrier
+            barr.arrive_and_wait();    // wait for all PX threads to enter the barrier
 
             std::size_t shepherd = 0;
 
