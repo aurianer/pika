@@ -51,7 +51,9 @@ void get_os_thread_num(barrier& barr, queue<std::size_t>& os_threads)
 {
     global_scratch = delay();
     os_threads.push(pika::get_worker_thread_num());
-    [[maybe_unused]] auto a_token = barr.arrive();
+    // `arrive_and_drop` is necessary here since the barrier can go out of scope
+    // in pika_main.
+    barr.arrive_and_drop();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

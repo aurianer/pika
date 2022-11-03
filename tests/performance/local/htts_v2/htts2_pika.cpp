@@ -140,7 +140,7 @@ private:
             }
         }
 
-        finished.arrive_and_wait();
+        finished.arrive_and_drop();
     }
 
     using results_type = double;

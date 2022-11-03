@@ -36,7 +36,7 @@ void suspend_test(barrier<>& b, std::size_t iterations)
     }
 
     // Wait for all pika threads to enter the barrier.
-    b.arrive_and_wait();
+    b.arrive_and_drop();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
