@@ -10,15 +10,11 @@ set(tests
     cuda_bulk
     cuda_pool
     cuda_scheduler
+    cuda_sender
     cuda_stream
     cusolver_handle
     then_with_stream
 )
-if(PIKA_WITH_CUDA)
-  list(APPEND tests cuda_sender)
-elseif(PIKA_WITH_HIP)
-  set(compile_tests cuda_sender)
-endif()
 
 set(cublas_matmul_PARAMETERS THREADS 4)
 set(cuda_sender_PARAMETERS THREADS 4)
@@ -29,7 +25,6 @@ set(cublas_handle_GPU ON)
 set(cuda_bulk_GPU ON)
 set(cuda_pool_GPU ON)
 set(cuda_scheduler_GPU ON)
-set(cuda_sender_GPU ON)
 set(cuda_stream_GPU ON)
 set(cusolver_handle_GPU ON)
 set(then_with_stream_GPU ON)

@@ -9,6 +9,9 @@
 
 #include <boost/lockfree/stack.hpp>
 #include <whip.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
+#include <sstream>
+#include <iostream>
 
 namespace pika::cuda::experimental::detail {
 
@@ -20,11 +23,7 @@ namespace pika::cuda::experimental::detail {
     {
         static constexpr int initial_events_in_pool = 128;
 
-        static cuda_event_pool& get_event_pool()
-        {
-            static cuda_event_pool event_pool_;
-            return event_pool_;
-        }
+        static cuda_event_pool& get_event_pool();
 
         // create a bunch of events on initialization
         cuda_event_pool()
@@ -67,6 +66,10 @@ namespace pika::cuda::experimental::detail {
     private:
         void add_event_to_pool()
         {
+            std::ostringstream s;
+            s << pika::get_worker_thread_num();
+            s << "\t add_event_to_pool begin\n";
+            std::cerr << s.str();
             whip::event_t event;
             // Create an cuda_event to query a CUDA/CUBLAS kernel for completion.
             // Timing is disabled for performance. [1]
@@ -74,6 +77,9 @@ namespace pika::cuda::experimental::detail {
             // [1]: CUDA Runtime API, section 5.5 cuda_event Management
             whip::event_create_with_flags(&event, whip::event_disable_timing);
             free_list_.push(event);
+            s << pika::get_worker_thread_num();
+            s << "\t add_event_to_pool end\n";
+            std::cerr << s.str();
         }
 
         // pool is dynamically sized and can grow if needed

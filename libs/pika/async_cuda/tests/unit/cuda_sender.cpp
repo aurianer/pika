@@ -10,9 +10,12 @@
 #include <pika/functional.hpp>
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
 
 #include <whip.hpp>
 
+#include <sstream>
+#include <iostream>
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -30,7 +33,17 @@ int pika_main(pika::program_options::variables_map& vm)
 {
     // install cuda future polling handler
     pika::cuda::experimental::enable_user_polling poll("default");
+
+    std::ostringstream s;
+    s << pika::get_worker_thread_num();
+    s << "\t in between poll and cuda_pool instances\n";
+    std::cerr << s.str();
+
     pika::cuda::experimental::cuda_pool cuda_pool(0);
+
+    s << pika::get_worker_thread_num();
+    s << "\t after cuda pool\n";
+    std::cerr << s.str();
 
     return pika::finalize();
 }

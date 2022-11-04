@@ -16,9 +16,12 @@
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
 
 #include <whip.hpp>
 
+#include <sstream>
+#include <iostream>
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
@@ -61,6 +64,11 @@ namespace pika::cuda::experimental::detail {
         // checking.
         pika::threads::detail::polling_status poll()
         {
+            std::ostringstream s;
+            //s << pika::get_worker_thread_num();
+            //s << "\t poll\n";
+            //std::cerr << s.str();
+
             using pika::threads::detail::polling_status;
 
             // Don't poll if another thread is already polling
@@ -305,6 +313,10 @@ namespace pika::cuda::experimental::detail {
 #if defined(PIKA_DEBUG)
         ++get_register_polling_count();
 #endif
+        std::ostringstream s;
+        s << pika::get_worker_thread_num();
+        s << "\t register_polling\n";
+        std::cerr << s.str();
         cud_debug.debug(debug::detail::str<>("enable polling"));
         auto* sched = pool.get_scheduler();
         sched->set_cuda_polling_functions(
@@ -325,5 +337,11 @@ namespace pika::cuda::experimental::detail {
         cud_debug.debug(debug::detail::str<>("disable polling"));
         auto* sched = pool.get_scheduler();
         sched->clear_cuda_polling_function();
+    }
+
+    cuda_event_pool& cuda_event_pool::get_event_pool()
+    {
+        static cuda_event_pool event_pool_;
+        return event_pool_;
     }
 }    // namespace pika::cuda::experimental::detail

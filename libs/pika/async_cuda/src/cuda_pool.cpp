@@ -61,6 +61,10 @@ namespace pika::cuda::experimental {
             num_normal_priority_streams_per_thread,
             num_high_priority_streams_per_thread, flags))
     {
+        std::ostringstream s;
+        s << pika::get_worker_thread_num();
+        s << "\t cuda pool constructor\n";
+        std::cerr << s.str();
     }
 
     bool cuda_pool::valid() const noexcept

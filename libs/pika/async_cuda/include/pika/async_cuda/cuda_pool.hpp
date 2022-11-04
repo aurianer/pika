@@ -10,7 +10,10 @@
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
 
+#include <sstream>
+#include <iostream>
 #include <atomic>
 #include <cstddef>
 #include <iosfwd>
@@ -100,6 +103,14 @@ namespace pika::cuda::experimental {
 
         PIKA_EXPORT friend std::ostream& operator<<(
             std::ostream&, cuda_pool const&);
+
+        ~cuda_pool()
+        {
+            std::ostringstream s;
+            s << pika::get_worker_thread_num();
+            s << "\t cuda pool destructor\n";
+            std::cerr << s.str();
+        }
         /// \endcond
     };
 }    // namespace pika::cuda::experimental

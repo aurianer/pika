@@ -13,8 +13,11 @@
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/runtime/runtime_fwd.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
 
 #include <string>
+#include <sstream>
+#include <iostream>
 
 namespace pika::cuda::experimental {
     // -----------------------------------------------------------------
@@ -24,6 +27,11 @@ namespace pika::cuda::experimental {
         enable_user_polling(std::string const& pool_name = "")
           : pool_name_(pool_name)
         {
+            std::ostringstream s;
+            s << pika::get_worker_thread_num();
+            s << "\tenable_user_polling\n";
+            std::cerr << s.str();
+
             // install polling loop on requested thread pool
             if (pool_name_.empty())
             {

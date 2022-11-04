@@ -8,10 +8,12 @@
 #include <pika/async_cuda/cuda_device_scope.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
 
 #include <whip.hpp>
 
 #include <ostream>
+#include <sstream>
 
 namespace pika::cuda::experimental {
     cuda_stream::priorities cuda_stream::get_available_priorities()
@@ -26,6 +28,10 @@ namespace pika::cuda::experimental {
     whip::stream_t cuda_stream::create_stream(int device,
         pika::execution::thread_priority priority, unsigned int flags)
     {
+        std::ostringstream s;
+        s << pika::get_worker_thread_num();
+        s << "\t create_stream begin\n";
+        std::cerr << s.str();
         cuda_device_scope d{device};
         auto p = get_available_priorities();
 
@@ -38,6 +44,9 @@ namespace pika::cuda::experimental {
         {
             whip::stream_create_with_priority(&stream, flags, p.greatest);
         }
+        s << pika::get_worker_thread_num();
+        s << "\t create_stream end\n";
+        std::cerr << s.str();
 
         return stream;
     }
