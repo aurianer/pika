@@ -17,6 +17,7 @@ spack_spec="pika@main+rocm+p2300 arch=${spack_arch} %${spack_compiler} malloc=sy
 
 configure_extra_options+=" -DCMAKE_BUILD_RPATH=$(spack location -i ${spack_compiler})/lib64"
 configure_extra_options+=" -DCMAKE_HIP_ARCHITECTURES=gfx900:xnack-;gfx906:xnack-"
+configure_extra_options+=" -DCMAKE_CXX_FLAGS=-DSTDEXEC_DISABLE_STD_DEPRECATIONS"
 configure_extra_options+=" -DPIKA_WITH_HIP=ON"
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
