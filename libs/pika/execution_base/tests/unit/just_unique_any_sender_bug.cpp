@@ -21,30 +21,15 @@
 #include <utility>
 
 namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
-template <class T>
 class SweepWorker {
 public:
-  SweepWorker(std::ptrdiff_t size, std::ptrdiff_t band_size)
-      : size_(size), band_size_(band_size) {}
-
-  SweepWorker(const SweepWorker&) = delete;
-  SweepWorker(SweepWorker&&) = default;
-
-  SweepWorker& operator=(const SweepWorker&) = delete;
-  SweepWorker& operator=(SweepWorker&&) = default;
-
-protected:
-  std::ptrdiff_t size_;
-  std::ptrdiff_t band_size_;
-  std::ptrdiff_t sweep_ = 0;
-  std::ptrdiff_t step_ = 0;
+  SweepWorker() {}
+  SweepWorker(SweepWorker&&) noexcept {};
 };
 
 int main()
 {
-    ex::unique_any_sender<SweepWorker<float>> send_ = ex::just(std::move(SweepWorker<float>(0, std::ptrdiff_t(1))));
-
+    ex::unique_any_sender<SweepWorker> send_ = ex::just(std::move(SweepWorker()));
     return 0;
 }
