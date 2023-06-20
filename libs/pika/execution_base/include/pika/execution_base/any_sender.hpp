@@ -387,7 +387,7 @@ namespace pika::execution::experimental::detail {
     {
         virtual ~any_receiver_base() = default;
         virtual void move_into(void* p) = 0;
-        virtual void set_value(Ts... ts) && = 0;
+        virtual void set_value(Ts&&... ts) && = 0;
         virtual void set_error(std::exception_ptr ep) && noexcept = 0;
         virtual void set_stopped() && noexcept = 0;
         virtual bool empty() const noexcept
@@ -412,7 +412,7 @@ namespace pika::execution::experimental::detail {
             return true;
         }
 
-        void set_value(Ts...) && override
+        void set_value(Ts&&...) && override
         {
             throw_bad_any_call("any_receiver", "set_value");
         }
@@ -456,7 +456,7 @@ namespace pika::execution::experimental::detail {
             new (p) any_receiver_impl(PIKA_MOVE(receiver));
         }
 
-        void set_value(Ts... ts) && override
+        void set_value(Ts&&... ts) && override
         {
             pika::execution::experimental::set_value(PIKA_MOVE(receiver), PIKA_MOVE(ts)...);
         }
@@ -505,7 +505,7 @@ namespace pika::execution::experimental::detail {
         any_receiver& operator=(any_receiver const&) = delete;
 
         friend void tag_invoke(
-            pika::execution::experimental::set_value_t, any_receiver&& r, Ts... ts) noexcept
+            pika::execution::experimental::set_value_t, any_receiver&& r, Ts&&... ts) noexcept
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_value. Doing
