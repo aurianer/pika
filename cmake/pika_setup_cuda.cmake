@@ -5,6 +5,18 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
+  pika_option(
+    PIKA_WITH_CUDA_STANDARD STRING
+    "CUDA standard to use for compiling pika (default: 17)" "17" ADVANCED
+  )
+  if(DEFINED CMAKE_CUDA_STANDARD AND NOT CMAKE_CUDA_STANDARD STREQUAL
+                                     PIKA_WITH_CUDA_STANDARD
+  )
+    pika_error(
+      "You've set CMAKE_CUDA_STANDARD to ${CMAKE_CUDA_STANDARD} and PIKA_WITH_CUDA_STANDARD to
+      ${PIKA_WITH_CUDA_STANDARD}. Please unset CMAKE_CUDA_STANDARD."
+    )
+  endif()
   if(CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
     # nvc++ is used for all source files and we don't enable CMake's CUDA
     # language support as it's not yet supported
@@ -27,12 +39,11 @@ if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
     # nvcc or clang are only used for cu files with CMake's CUDA language
     # support
     if(NOT PIKA_FIND_PACKAGE)
-      if(DEFINED CMAKE_CUDA_STANDARD AND NOT CMAKE_CUDA_STANDARD STREQUAL
-                                         CMAKE_CXX_STANDARD
-      )
+      if(NOT PIKA_WITH_CUDA_STANDARD STREQUAL PIKA_WITH_CXX_STANDARD)
         pika_info(
-          "You've set PIKA_WITH_CXX_STANDARD to ${PIKA_WITH_CXX_STANDARD} and CMAKE_CUDA_STANDARD to ${CMAKE_CUDA_STANDARD}."
+          "You've set PIKA_WITH_CXX_STANDARD to ${PIKA_WITH_CXX_STANDARD} and PIKA_WITH_CUDA_STANDARD to ${PIKA_WITH_CUDA_STANDARD}."
         )
+        set(CMAKE_CUDA_STANDARD ${PIKA_WITH_CUDA_STANDARD})
       else()
         set(CMAKE_CUDA_STANDARD ${PIKA_WITH_CXX_STANDARD})
       endif()
@@ -63,12 +74,10 @@ if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
         pika_internal::cuda INTERFACE CUDA::cublas CUDA::cusolver
       )
     endif()
-    if(DEFINED CMAKE_CUDA_STANDARD)
-      # Flag not working for CLANG CUDA
-      target_compile_features(
-        pika_internal::cuda INTERFACE cuda_std_${CMAKE_CUDA_STANDARD}
-      )
-    endif()
+    # Flag not working for CLANG CUDA
+    target_compile_features(
+      pika_internal::cuda INTERFACE cuda_std_${PIKA_WITH_CUDA_STANDARD}
+    )
     set_target_properties(
       pika_internal::cuda PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON
     )

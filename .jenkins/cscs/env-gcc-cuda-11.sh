@@ -18,7 +18,7 @@ spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +cuda malloc=system 
 ^boost@${boost_version} ^hwloc@${hwloc_version} ^cuda@${cuda_version} ^fmt@${fmt_version}"
 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
-configure_extra_options+=" -DCMAKE_CUDA_STANDARD=${cuda_std}"
+configure_extra_options+=" -DPIKA_WITH_CUDA_STANDARD=${cuda_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_CUDA=ON"
 configure_extra_options+=" -DPIKA_WITH_EXAMPLES_OPENMP=ON"
