@@ -63,6 +63,7 @@ status = [
   "jenkins/cscs-daint/gcc-13-release",
   "jenkins/cscs-daint/gcc-cuda-11-debug",
   "jenkins/cscs-daint/gcc-cuda-11-release",
+  "jenkins/cscs-daint/gcc-cuda-11-stdexec-release",
   "jenkins/cscs-daint/gcc-cuda-12-debug",
   "jenkins/cscs-daint/gcc-cuda-12-release",
   "jenkins/cscs-daint/nvhpc-debug",
