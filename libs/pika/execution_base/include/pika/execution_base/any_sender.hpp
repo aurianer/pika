@@ -449,6 +449,7 @@ namespace pika::execution::experimental::detail {
 
         void set_value(Ts&&... ts) && override
         {
+            static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>);
             pika::execution::experimental::set_value(PIKA_MOVE(receiver), PIKA_MOVE(ts)...);
         }
 
@@ -719,6 +720,8 @@ namespace pika::execution::experimental {
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender(Sender&& sender)
         {
+            static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>, "any_sender "
+                "does not handle references as completion signatures");
             storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
         }
 
@@ -726,6 +729,8 @@ namespace pika::execution::experimental {
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender& operator=(Sender&& sender)
         {
+            static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>, "any_sender "
+                "does not handle references as completion signatures");
             storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
             return *this;
         }
@@ -805,6 +810,8 @@ namespace pika::execution::experimental {
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender(Sender&& sender)
         {
+            static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>, "any_sender "
+                "does not handle references as completion signatures");
             static_assert(std::is_copy_constructible_v<std::decay_t<Sender>>,
                 "any_sender requires the given sender to be copy constructible. Ensure the used "
                 "sender type is copy constructible or use unique_any_sender if you do not require "
@@ -816,6 +823,8 @@ namespace pika::execution::experimental {
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender& operator=(Sender&& sender)
         {
+            static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>, "any_sender "
+                "does not handle references as completion signatures");
             static_assert(std::is_copy_constructible_v<std::decay_t<Sender>>,
                 "any_sender requires the given sender to be copy constructible. Ensure the used "
                 "sender type is copy constructible or use unique_any_sender if you do not require "
