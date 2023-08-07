@@ -509,16 +509,15 @@ namespace pika::execution::experimental::detail {
             pika::execution::experimental::set_value_t, any_receiver&& r, Ts_&&... ts) noexcept
             -> decltype(PIKA_MOVE(PIKA_MOVE(r.storage.get())).set_value(PIKA_FORWARD(Ts_, ts)...))
         {
+            // We first move the storage to a temporary variable so that
+            // this any_receiver is empty after this set_value. Doing
+            // PIKA_MOVE(storage.get()).set_value(...) would leave us with a
+            // non-empty any_receiver holding a moved-from receiver.
+            auto moved_storage = PIKA_MOVE(r.storage);
             try {
-                // We first move the storage to a temporary variable so that
-                // this any_receiver is empty after this set_value. Doing
-                // PIKA_MOVE(storage.get()).set_value(...) would leave us with a
-                // non-empty any_receiver holding a moved-from receiver.
-                auto moved_storage = PIKA_MOVE(r.storage);
                 PIKA_MOVE(moved_storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...);
-            } catch(std::exception_ptr& ep) {
-                auto moved_storage = PIKA_MOVE(r.storage);
-                PIKA_MOVE(moved_storage.get()).set_error(PIKA_MOVE(ep));
+            } catch(...) {
+                PIKA_MOVE(moved_storage.get()).set_error(std::current_exception());
             }
         }
 

@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <exception>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -631,17 +632,23 @@ void test_when_all()
 struct throwing_move_constructor
 {
     throwing_move_constructor() noexcept(false) {}
-    throwing_move_constructor(throwing_move_constructor&&) noexcept(false) {};
+    throwing_move_constructor(throwing_move_constructor&&) noexcept(false) { throw std::runtime_error("error"); };
     throwing_move_constructor(const throwing_move_constructor&) = default;
 };
 
 void test_throwing_move_constructor()
 {
-    [[maybe_unused]] ex::unique_any_sender<throwing_move_constructor> send_unique_any_ =
+    std::atomic<bool> set_error_called{false};
+    ex::unique_any_sender<throwing_move_constructor> send_unique_any_ =
         ex::just(std::move(throwing_move_constructor()));
+    auto r = error_callback_receiver<decltype(check_exception_ptr)>{check_exception_ptr,
+        set_error_called};
+    auto os = ex::connect(std::move(send_unique_any_), std::move(r));
+    ex::start(os);
+    PIKA_TEST(set_error_called);
+
     [[maybe_unused]] ex::any_sender<throwing_move_constructor> send_any_ =
         ex::just(std::move(throwing_move_constructor()));
-    PIKA_TEST(true);
 }
 
 void test_reference_and_const_reference()
