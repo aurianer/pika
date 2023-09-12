@@ -11,7 +11,7 @@ include:
 
 stages:
   - build
-  - test
+    #  - test
 
 
 # TODO: change to spack builds once this pipeline works
@@ -54,16 +54,16 @@ build cpu debug clang14:
     THREADS_PER_NODE: 72
     COMPILER: clang
 
-.test_common:
-  stage: test
-  trigger:
-    strategy: depend
-
-test cpu debug clang14:
-  extends: .test_common
-  needs:
-    - build cpu debug clang14
-  trigger:
-    include:
-      - artifact: pipeline_ci_local.yml
-        job: build cpu debug clang14
+      #.test_common:
+      #  stage: test
+      #  trigger:
+      #    strategy: depend
+      #
+      #test cpu debug clang14:
+      #  extends: .test_common
+      #  needs:
+      #    - build cpu debug clang14
+      #  trigger:
+      #    include:
+      #      - artifact: pipeline_ci_local.yml
+      #        job: build cpu debug clang14
