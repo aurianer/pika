@@ -9,6 +9,8 @@ ARG BUILD_DIR
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN echo $PWD
+
 COPY . ${SOURCE_DIR}
 
 SHELL ["/bin/bash", "-c"]
