@@ -40,6 +40,8 @@ logfile=${build_dir}/reports/jenkins-pika-${configuration_name}.log
 
 # Load python packages
 source /apps/daint/SSL/pika/virtual_envs/perftests_env/bin/activate
+pip uninstall matplotlib
+pip install -r ${src_dir}/tools/perftests_ci/requirements.txt
 
 # Things went alright by default
 configure_build_errors=0
