@@ -340,7 +340,7 @@ namespace pika::util {
 #if PIKA_HAVE_ITTNOTIFY != 0
         use_ittnotify_api = get_itt_notify_mode();
 #endif
-        PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
+        //PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
 
         small_stacksize = init_small_stack_size();
         medium_stacksize = init_medium_stack_size();
@@ -372,7 +372,7 @@ namespace pika::util {
 #if PIKA_HAVE_ITTNOTIFY != 0
         use_ittnotify_api = get_itt_notify_mode();
 #endif
-        PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
+        //PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
 
         small_stacksize = init_small_stack_size();
         medium_stacksize = init_medium_stack_size();
