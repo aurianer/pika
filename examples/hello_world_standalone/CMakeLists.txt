@@ -12,6 +12,8 @@ if(EXISTS "${pika_DIR}")
   find_package(pika REQUIRED)
 
   add_executable(hello_world hello_world.cpp)
+  set_target_properties(hello_world PROPERTIES
+    EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
   target_include_directories(hello_world PRIVATE ${test_SOURCE_DIR})
   target_link_libraries(hello_world PRIVATE pika::pika)
 
