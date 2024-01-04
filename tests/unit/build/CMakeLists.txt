@@ -56,7 +56,6 @@ function(pika_create_cmake_test name using_install_dir pika_dir build_type
     VERBATIM
   )
   set_target_properties(${name} PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-  set_target_properties(${name} PROPERTIES LABELS "STANDALONE_TESTS")
   add_dependencies(${name} pika)
 
   if(MSVC)
