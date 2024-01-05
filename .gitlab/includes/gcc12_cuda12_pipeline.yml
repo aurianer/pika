@@ -66,15 +66,16 @@ gcc12_cuda12_debug_build:
     reports:
       dotenv: build.env
 
-# Test step currently commented as the cuda driver is too old on clariden:
-# https://github.com/pika-org/pika/issues/884
-#gcc12_cuda12_debug_test:
-#  extends:
-#    - .variables_gcc12_cuda12_config
-#    - .test_common_gpu_clariden_cuda
-#  needs:
-#    - gcc12_cuda12_debug_build
-#  script:
-#    - spack arch
-#    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(nproc) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
-#  image: $PERSIST_IMAGE_NAME
+ Test step currently commented as the cuda driver is too old on clariden:
+ https://github.com/pika-org/pika/issues/884
+gcc12_cuda12_debug_test:
+  extends:
+    - .variables_gcc12_cuda12_config
+    - .test_common_gpu_clariden_cuda
+  needs:
+    - gcc12_cuda12_debug_build
+  script:
+    - spack arch
+# Currently excluding async_cuda as cuda driver too old for CUDA 12
+    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(nproc) --timeout 120 --output-on-failure --no-compress-output --no-tests=error --exclude-regex async_cuda"
+  image: $PERSIST_IMAGE_NAME
