@@ -9,6 +9,7 @@ include:
 
 stages:
   - spack_base
+  - multiarch_image
   - spack_compiler
   - spack_dependencies
   - build
