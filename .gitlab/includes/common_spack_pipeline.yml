@@ -10,6 +10,23 @@ include:
 variables:
   SPACK_COMMIT: 6cfcbc01679ebabe640f4462c8fc07626a543015
 
+base_spack_image_santis:
+  stage: spack_base
+  timeout: 2 hours
+  extends: .container-builder
+  before_script:
+    - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
+    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT | sha256sum - | head -c 16`
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-spack-base:$CONFIG_TAG
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> base.env
+  variables:
+    BASE_IMAGE: --platform=linux/arm64 docker.io/ubuntu:22.04
+    DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT"]'
+  artifacts:
+    reports:
+      dotenv: base.env
+
 base_spack_image:
   stage: spack_base
   timeout: 2 hours
@@ -43,6 +60,25 @@ base_spack_image:
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_ARCH","COMPILER","NVHPC_COMPILER"]'
+  artifacts:
+    reports:
+      dotenv: compiler.env
+
+.compiler_image_template_santis:
+  stage: spack_compiler
+  needs: [base_spack_image_santis]
+  extends:
+    - .container-builder
+  before_script:
+    - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
+    - CONFIG_TAG=`echo $DOCKERFILE_SHA-$ARCH-$BASE_IMAGE-$COMPILER | sha256sum - | head -c 16`
+    - compiler=${COMPILER/@/-}
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler:$CONFIG_TAG
+    - echo -e "compiler=$compiler" >> compiler.env
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
+  variables:
+    DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER"]'
   artifacts:
     reports:
       dotenv: compiler.env
