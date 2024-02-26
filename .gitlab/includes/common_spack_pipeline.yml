@@ -37,10 +37,15 @@ make_multiarch_image:
   stage: multiarch_image
   needs: [base_spack_image_aarch64, base_spack_image_x86_64]
   extends: .make-multiarch-image
+  after_script:
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> multiarch.env
   variables:
     PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-spack-base:${CONFIG_TAG}
     PERSIST_IMAGE_NAME_AARCH64: $BASE_IMAGE_AARCH64
     PERSIST_IMAGE_NAME_X86_64: $BASE_IMAGE_X86_64
+  artifacts:
+    reports:
+      dotenv: multiarch.env
 
 .compiler_image_template:
   stage: spack_compiler
@@ -55,7 +60,7 @@ make_multiarch_image:
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE=$PERSIST_IMAGE_NAME","SPACK_ARCH","COMPILER","NVHPC_COMPILER"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_ARCH","COMPILER","NVHPC_COMPILER"]'
   artifacts:
     reports:
       dotenv: compiler.env
