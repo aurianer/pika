@@ -50,5 +50,6 @@ ARG USE_SPACK_BUILDCACHE
 RUN spack external find --exclude python --scope site \
     && spack compiler find --scope site \
     && ([[ "${USE_SPACK_BUILDCACHE}" != "true" ]] \
-        || (spack mirror add ${SPACK_BUILDCACHE} https://binaries.spack.io/${SPACK_BUILDCACHE} \
+        || (spack mirror add ${SPACK_BUILDCACHE}-developer-tools-manylinux2024 \
+            https://binaries.spack.io/${SPACK_BUILDCACHE}/developer-tools-manylinux2014 \
             && spack buildcache keys --install --trust))
