@@ -72,7 +72,11 @@ namespace pika::thread_pool_bulk_detail {
 #endif
     };
 
-    template <typename Sender, typename Shape, typename F, typename Receiver>
+    template <typename Sender, typename Shape, typename F, typename Receiver
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+        , bool IsChunked = false
+#endif
+        >
     struct operation_state
     {
         struct bulk_receiver
@@ -115,9 +119,19 @@ namespace pika::thread_pool_bulk_detail {
                     auto const i_end = (std::min)(
                         (static_cast<Shape>(index) + 1) * static_cast<Shape>(task_f->chunk_size),
                         task_f->n);
-                    for (auto i = i_begin; i < i_end; ++i)
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+                    if constexpr (IsChunked)
                     {
-                        std::apply(pika::util::detail::bind_front(op_state->f, i), ts);
+                        std::apply(
+                            pika::util::detail::bind_front(op_state->f, i_begin, i_end), ts);
+                    }
+                    else
+#endif
+                    {
+                        for (auto i = i_begin; i < i_end; ++i)
+                        {
+                            std::apply(pika::util::detail::bind_front(op_state->f, i), ts);
+                        }
                     }
                 }
 
@@ -432,7 +446,11 @@ namespace pika::thread_pool_bulk_detail {
     /// thread (the completion scheduler is a thread_pool_scheduler;
     /// otherwise the customization defined in this file is not chosen) it
     /// will be reused as one of the worker threads.
-    template <typename Sender, typename Shape, typename F>
+    template <typename Sender, typename Shape, typename F
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+        , bool IsChunked = false
+#endif
+        >
     class thread_pool_bulk_sender
     {
     private:
@@ -480,7 +498,11 @@ namespace pika::thread_pool_bulk_detail {
         template <typename Receiver>
         auto connect(Receiver&& receiver) &&
         {
-            return operation_state<Sender, Shape, F, std::decay_t<Receiver>>{std::move(scheduler),
+            return operation_state<Sender, Shape, F, std::decay_t<Receiver>
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+                , IsChunked
+#endif
+                >{std::move(scheduler),
                 std::move(sender), std::move(shape), std::move(f),
                 std::forward<Receiver>(receiver)};
         }
@@ -488,7 +510,11 @@ namespace pika::thread_pool_bulk_detail {
         template <typename Receiver>
         auto connect(Receiver&& receiver) const&
         {
-            return operation_state<Sender, Shape, F, std::decay_t<Receiver>>{
+            return operation_state<Sender, Shape, F, std::decay_t<Receiver>
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+                , IsChunked
+#endif
+                >{
                 scheduler, sender, shape, f, std::forward<Receiver>(receiver)};
         }
 
