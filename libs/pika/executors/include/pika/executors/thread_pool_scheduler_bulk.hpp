@@ -520,9 +520,37 @@ namespace pika::thread_pool_bulk_detail {
 
         auto get_env() const& noexcept { return pika::execution::experimental::get_env(sender); }
     };
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+    struct transform_bulk_fn
+    {
+        pika::execution::experimental::thread_pool_scheduler scheduler;
+
+        template <class Tag, class Data, class CvSender>
+        auto operator()(Tag, Data&& data, CvSender&& sndr)
+        {
+            auto [pol, shape, fun] = static_cast<Data&&>(data);
+
+            if constexpr (std::is_same_v<Tag, stdexec::bulk_chunked_t>)
+            {
+                // Chunked function: f(begin, end, args...)
+                return thread_pool_bulk_sender<std::decay_t<CvSender>,
+                    std::decay_t<decltype(shape)>, std::decay_t<decltype(fun)>, true>{
+                    std::move(scheduler), static_cast<CvSender&&>(sndr), shape, std::move(fun)};
+            }
+            else
+            {
+                // bulk_t and bulk_unchunked_t: unchunked function f(i, args...)
+                return thread_pool_bulk_sender<std::decay_t<CvSender>,
+                    std::decay_t<decltype(shape)>, std::decay_t<decltype(fun)>>{
+                    std::move(scheduler), static_cast<CvSender&&>(sndr), shape, std::move(fun)};
+            }
+        }
+    };
+#endif
 }    // namespace pika::thread_pool_bulk_detail
 
 namespace pika::execution::experimental {
+#if !defined(PIKA_HAVE_STDEXEC)
     template <typename Sender, typename Shape, typename F,
         PIKA_CONCEPT_REQUIRES_(std::is_integral_v<std::decay_t<Shape>>)>
     constexpr auto
@@ -532,4 +560,20 @@ namespace pika::execution::experimental {
             std::decay_t<Shape>, std::decay_t<F>>{std::move(scheduler),
             std::forward<Sender>(sender), std::forward<Shape>(shape), std::forward<F>(f)};
     }
+#endif
+
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+    template <stdexec::sender Sender, class Env>
+    constexpr auto thread_pool_scheduler::domain::transform_sender(
+        stdexec::set_value_t, Sender&& sndr, Env const& env) const noexcept
+        requires stdexec::__one_of<stdexec::tag_of_t<Sender>, stdexec::bulk_t,
+            stdexec::bulk_chunked_t, stdexec::bulk_unchunked_t>
+    {
+        auto sched = stdexec::get_completion_scheduler<stdexec::set_value_t>(
+            stdexec::get_env(sndr), env);
+        auto&& [tag, data, child] = sndr;
+        return thread_pool_bulk_detail::transform_bulk_fn{std::move(sched)}(
+            tag, std::forward<decltype(data)>(data), std::forward<decltype(child)>(child));
+    }
+#endif
 }    // namespace pika::execution::experimental

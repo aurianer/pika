@@ -36,8 +36,8 @@ namespace pika::execution::experimental {
             template <stdexec::sender Sender, class Env>
             constexpr auto transform_sender(
                 stdexec::set_value_t, Sender&& sndr, Env const& env) const noexcept
-                requires stdexec::__one_of<stdexec::tag_of_t<Sender>, stdexec::bulk_chunked_t,
-                    stdexec::bulk_unchunked_t>;
+                requires stdexec::__one_of<stdexec::tag_of_t<Sender>, stdexec::bulk_t,
+                    stdexec::bulk_chunked_t, stdexec::bulk_unchunked_t>;
         };
 #endif
 
