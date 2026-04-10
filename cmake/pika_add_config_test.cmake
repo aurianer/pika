@@ -524,6 +524,15 @@ function(pika_check_for_stdexec_member_queries)
 endfunction()
 
 # ##################################################################################################
+function(pika_check_for_stdexec_completion_domain)
+  pika_add_config_test(
+    PIKA_WITH_STDEXEC_COMPLETION_DOMAIN
+    SOURCE cmake/tests/stdexec_completion_domain.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##################################################################################################
 function(pika_check_for_mpix_continuations)
   pika_add_config_test(
     PIKA_WITH_MPIX_CONTINUATIONS

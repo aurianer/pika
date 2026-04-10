@@ -39,6 +39,9 @@ if(PIKA_WITH_STDEXEC)
       DEFINITIONS PIKA_HAVE_STDEXEC_TRANSFORM_COMPLETION_SIGNATURES INCLUDE_DIRECTORIES
       ${_stdexec_include_dirs}
     )
+    pika_check_for_stdexec_completion_domain(
+      DEFINITIONS PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
+    )
   endif()
 
 endif()

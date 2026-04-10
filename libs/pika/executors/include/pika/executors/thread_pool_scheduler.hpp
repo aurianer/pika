@@ -29,6 +29,18 @@
 namespace pika::execution::experimental {
     struct thread_pool_scheduler
     {
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+        struct domain : stdexec::default_domain
+        {
+            // defined in thread_pool_scheduler_bulk because it needs thread_pool_bulk_sender and transform_bulk_fn
+            template <stdexec::sender Sender, class Env>
+            constexpr auto transform_sender(
+                stdexec::set_value_t, Sender&& sndr, Env const& env) const noexcept
+                requires stdexec::__one_of<stdexec::tag_of_t<Sender>, stdexec::bulk_chunked_t,
+                    stdexec::bulk_unchunked_t>;
+        };
+#endif
+
         constexpr thread_pool_scheduler() = default;
         explicit thread_pool_scheduler(pika::threads::detail::thread_pool_base* pool)
           : pool_(pool)
@@ -228,6 +240,16 @@ namespace pika::execution::experimental {
                 {
                     return scheduler;
                 }
+
+#if defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+                template <class CPO>
+                thread_pool_scheduler::domain query(
+                    stdexec::get_completion_domain_t<CPO>,
+                    stdexec::__ignore = {}) const noexcept
+                {
+                    return {};
+                }
+#endif
 #else
                 // backward compatibility with older stdexec versions and pika's own implementation
                 friend std::decay_t<Scheduler> tag_invoke(
@@ -248,6 +270,14 @@ namespace pika::execution::experimental {
         {
             return *this;
         }
+
+#if defined(PIKA_HAVE_STDEXEC_COMPLETION_DOMAIN)
+        domain query(stdexec::get_completion_domain_t<stdexec::set_value_t>,
+            stdexec::__ignore = {}) const noexcept
+        {
+            return {};
+        }
+#endif
 #endif
 
         // member function for newer stdexec versions
