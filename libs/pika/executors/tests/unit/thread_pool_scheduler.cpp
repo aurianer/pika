@@ -17,6 +17,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -1309,6 +1310,27 @@ void test_bulk()
         {
             for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(v[i], i); }
         }
+    }
+
+    // Check that bulk actually runs in parallel across multiple worker threads
+    // (regressed silently when stdexec routed bulk through its sequential
+    // default domain).
+    if (pika::resource::get_num_threads() > 1)
+    {
+        int const n = 10000;
+        std::vector<int> v(n, 0);
+
+        pika::mutex mtx;
+        std::set<pika::thread::id> tids;
+
+        tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) | ex::bulk(n, [&](int i) {
+            ++v[i];
+            std::lock_guard lk(mtx);
+            tids.insert(pika::this_thread::get_id());
+        }));
+
+        for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(v[i], 1); }
+        PIKA_TEST(tids.size() > 1);
     }
 }
 
